@@ -1,0 +1,1 @@
+export default function Loader() { return <div className="h-6 w-6 animate-spin rounded-full border-4 border-stone-200 border-t-stone-900 dark:border-slate-700 dark:border-t-white" aria-label="Loading" /> }

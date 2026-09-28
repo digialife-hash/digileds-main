@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/* Use the app-wide theme attribute for Tailwind's dark: utilities. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: Georgia, serif;
+}
+
+body { @apply bg-stone-50 text-stone-900 antialiased; }
+
+@keyframes calendarPostFocus {
+  0%, 100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
+  }
+  50% {
+    background-color: rgba(255, 247, 237, 0.98);
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.24), 0 12px 30px rgba(249, 115, 22, 0.16);
+  }
+}
+
+@keyframes repost-shimmer {
+  from { transform: translateX(0); }
+  to { transform: translateX(420%); }
+}
+
+.calendar-post-focus {
+  animation: calendarPostFocus 0.45s ease-in-out 6;
+  border-radius: 1rem;
+}
+
+/* Shared fallback surfaces for social pages that predate the dark theme classes. */
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class*="bg-[#f5f5f4]"],
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class*="bg-[#f6f7fb]"],
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class*="bg-[#f7f7f5]"],
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class*="bg-[#faf9f7]"] {
+  background-color: #070b14 !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="bg-[#f5efff]"] {
+  background-color: #17132a !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="bg-white"]:not([class*="dark:bg-white"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class*="bg-white/"]:not([class*="dark:bg-white"]) {
+  background-color: #111827 !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="bg-stone-50"]:not([class*="dark:bg-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="bg-stone-100"]:not([class*="dark:bg-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="bg-stone-200"]:not([class*="dark:bg-"]) {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="text-stone-900"]:not([class*="dark:text-"]) {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="text-stone-800"]:not([class*="dark:text-"]) {
+  color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="text-stone-700"]:not([class*="dark:text-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="text-stone-600"]:not([class*="dark:text-"]) {
+  color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="text-stone-500"]:not([class*="dark:text-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class~="text-stone-400"]:not([class*="dark:text-"]) {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class*="border-stone-"]:not([class*="dark:border-"]) {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) [class*="border-white/"]:not([class*="dark:border-"]) {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+/* Pages share many legacy light utility classes. Keep their dark treatment
+   consistent without requiring every dashboard component to duplicate styles. */
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class~="bg-slate-50"]:not([class*="dark:bg-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class~="bg-slate-100"]:not([class*="dark:bg-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class~="bg-slate-200"]:not([class*="dark:bg-"]) {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="bg-slate-50/"]:not([class*="dark:bg-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="bg-slate-100/"]:not([class*="dark:bg-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="bg-stone-50/"]:not([class*="dark:bg-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="bg-stone-100/"]:not([class*="dark:bg-"]) {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="text-slate-950"]:not([class*="dark:text-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="text-slate-900"]:not([class*="dark:text-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="text-slate-800"]:not([class*="dark:text-"]) {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="text-slate-700"]:not([class*="dark:text-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="text-slate-600"]:not([class*="dark:text-"]) {
+  color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="text-slate-500"]:not([class*="dark:text-"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="text-slate-400"]:not([class*="dark:text-"]) {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="border-slate-"]:not([class*="dark:border-"]) {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) textarea,
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) select {
+  color: #e2e8f0;
+  caret-color: #a5b4fc;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  input::placeholder,
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root) textarea::placeholder {
+  color: #64748b;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="shadow-"] {
+  --tw-shadow-color: rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="bg-[#020817]"],
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="bg-[#070b14]"] {
+  background-color: #070b14 !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="hover:bg-white"]:hover:not([class*="dark:hover:bg-"]) {
+  background-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+html[data-theme="dark"] :is(.social-dashboard-shell, .social-theme-root)
+  [class*="ring-stone-"]:not([class*="dark:ring-"]) {
+  --tw-ring-color: rgba(148, 163, 184, 0.18) !important;
+}

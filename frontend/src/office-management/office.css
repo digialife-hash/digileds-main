@@ -1,0 +1,293 @@
+.office-management-root {
+  min-height: 100vh;
+  color: #0f172a;
+  background: #f8fafc;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+[data-theme="dark"] .office-management-root {
+  color: #e5e7eb;
+  background: #0f172a;
+  color-scheme: dark;
+}
+
+[data-theme="dark"] .office-management-root .bg-white,
+[data-theme="dark"] .office-management-root .bg-white\/90 {
+  background-color: #111827 !important;
+}
+
+[data-theme="dark"] .office-management-root .bg-slate-50,
+[data-theme="dark"] .office-management-root .bg-slate-50\/50 {
+  background-color: #1f2937 !important;
+}
+
+[data-theme="dark"] .office-management-root .bg-slate-100 {
+  background-color: #273449 !important;
+}
+
+[data-theme="dark"] .office-management-root .bg-blue-50,
+[data-theme="dark"] .office-management-root .bg-cyan-50,
+[data-theme="dark"] .office-management-root .bg-indigo-50,
+[data-theme="dark"] .office-management-root .bg-emerald-50,
+[data-theme="dark"] .office-management-root .bg-violet-50,
+[data-theme="dark"] .office-management-root .bg-teal-50,
+[data-theme="dark"] .office-management-root .bg-amber-50,
+[data-theme="dark"] .office-management-root .bg-rose-50,
+[data-theme="dark"] .office-management-root .bg-red-50 {
+  background-color: color-mix(in srgb, currentColor 12%, #111827) !important;
+}
+
+[data-theme="dark"] .office-management-root .text-slate-950,
+[data-theme="dark"] .office-management-root .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .office-management-root .text-slate-700,
+[data-theme="dark"] .office-management-root .text-slate-600 {
+  color: #d1d5db !important;
+}
+
+[data-theme="dark"] .office-management-root .text-slate-500,
+[data-theme="dark"] .office-management-root .text-slate-400 {
+  color: #9ca3af !important;
+}
+
+[data-theme="dark"] .office-management-root .border-slate-200,
+[data-theme="dark"] .office-management-root .border-slate-100 {
+  border-color: #374151 !important;
+}
+
+[data-theme="dark"] .office-management-root input,
+[data-theme="dark"] .office-management-root textarea,
+[data-theme="dark"] .office-management-root select,
+[data-theme="dark"] .office-management-root .field-input {
+  color: #f3f4f6 !important;
+  background-color: #111827 !important;
+  border-color: #4b5563 !important;
+  color-scheme: dark;
+}
+
+[data-theme="dark"] .office-management-root input::placeholder,
+[data-theme="dark"] .office-management-root textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:bg-slate-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-slate-100:hover {
+  background-color: #273449 !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:bg-white:hover {
+  background-color: #1f2937 !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:bg-blue-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-cyan-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-indigo-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-emerald-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-violet-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-teal-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-amber-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-rose-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-red-50:hover {
+  background-color: #26364d !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:bg-blue-600:hover {
+  background-color: #2563eb !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:bg-red-50:hover,
+[data-theme="dark"] .office-management-root .hover\:bg-rose-50:hover {
+  background-color: #3a2028 !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:text-slate-900:hover,
+[data-theme="dark"] .office-management-root .hover\:text-slate-700:hover {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:text-blue-600:hover,
+[data-theme="dark"] .office-management-root .hover\:text-blue-700:hover {
+  color: #93c5fd !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:text-red-600:hover,
+[data-theme="dark"] .office-management-root .hover\:text-rose-600:hover {
+  color: #fda4af !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:text-amber-700:hover {
+  color: #fcd34d !important;
+}
+
+[data-theme="dark"] .office-management-root .hover\:border-blue-600:hover,
+[data-theme="dark"] .office-management-root .focus\:border-blue-600:focus {
+  border-color: #60a5fa !important;
+}
+
+[data-theme="dark"] .office-management-root button:not(:disabled):focus-visible,
+[data-theme="dark"] .office-management-root a:focus-visible,
+[data-theme="dark"] .office-management-root input:focus-visible,
+[data-theme="dark"] .office-management-root textarea:focus-visible,
+[data-theme="dark"] .office-management-root select:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+[data-theme="dark"] .office-management-root button:disabled {
+  opacity: 0.6;
+}
+
+[data-theme="dark"] .office-management-root .group:hover {
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+[data-theme="dark"] .office-management-root .office-navbar {
+  background-color: rgb(17 24 39 / 0.92) !important;
+  border-color: #374151 !important;
+}
+
+[data-theme="dark"] .office-management-root .sidebar-panel {
+  background-color: #111827 !important;
+  color: #f8fafc;
+  border-color: #374151 !important;
+}
+
+[data-theme="dark"] .office-management-root .sidebar-panel .text-slate-700 {
+  color: #d1d5db !important;
+}
+
+[data-theme="dark"] .office-management-root .sidebar-panel .hover\:text-slate-900:hover,
+[data-theme="dark"] .office-management-root .sidebar-panel .hover\:text-blue-600:hover {
+  color: #93c5fd !important;
+}
+
+[data-theme="dark"] .office-management-root .sidebar-panel .hover\:bg-slate-100:hover {
+  background-color: #273449 !important;
+}
+
+[data-theme="dark"] .office-management-root .sidebar-panel .bg-slate-50\/50 {
+  background-color: rgb(31 41 55 / 0.7) !important;
+}
+
+[data-theme="dark"] .office-management-root .shadow-sm,
+[data-theme="dark"] .office-management-root .shadow-md,
+[data-theme="dark"] .office-management-root .shadow-xl {
+  box-shadow: 0 12px 30px rgb(2 6 23 / 0.28) !important;
+}
+
+.sidebar-panel {
+  width: 18rem;
+  transform: translate3d(-100%, 0, 0);
+  will-change: transform, width;
+  transition:
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 520ms ease;
+}
+
+.sidebar-panel[data-open="true"] {
+  transform: translate3d(0, 0, 0);
+  box-shadow: 0 25px 50px -12px rgb(15 23 42 / 0.35);
+}
+
+.sidebar-panel[data-collapsed="true"] {
+  width: 5rem;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.filter-control {
+  flex: 1 1 11.25rem;
+  min-width: 10rem;
+  transition:
+    flex-basis 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    flex-grow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 240ms ease;
+}
+
+.filter-control:first-child {
+  flex-grow: 1.5;
+  flex-basis: 22rem;
+}
+
+.filter-control:focus,
+.filter-control:focus-within {
+  flex-grow: 2.6;
+  flex-basis: 28rem;
+  transform: translateY(-1px);
+  z-index: 1;
+}
+
+.field-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #0f172a;
+  outline: none;
+}
+
+.field-input:focus {
+  border-color: #3b82f6;
+}
+
+.brand-logo-glass,
+.brand-logo-glass--dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 18px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.brand-logo-glass {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 8px 30px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.brand-logo-glass--dark {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 10px 30px rgba(2, 6, 23, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.brand-logo-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+@media (min-width: 1024px) {
+  .sidebar-panel {
+    transform: translate3d(0, 0, 0);
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .filter-control,
+  .filter-control:first-child,
+  .filter-control:focus,
+  .filter-control:focus-within {
+    flex-basis: 100%;
+    min-width: 0;
+    width: 100%;
+  }
+}

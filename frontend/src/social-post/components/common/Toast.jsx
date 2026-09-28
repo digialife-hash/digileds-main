@@ -1,0 +1,1 @@
+export default function Toast({ message }) { return message ? <div className="fixed bottom-6 right-6 z-50 rounded-xl bg-stone-900 px-5 py-3 text-sm text-white shadow-xl dark:bg-white dark:text-slate-950">{message}</div> : null }

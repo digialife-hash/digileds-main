@@ -1,0 +1,402 @@
+"/www/office-management/frontend/dist",
+import express from "express";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { parse as parseQueryString } from "node:querystring";
+import mongoose from "mongoose";
+import cors from "cors";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
+import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
+
+import authRoutes from "./routes/authRoutes.js";
+import clientRoutes from "./routes/clientRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
+import employeeRoutes from "./routes/employeeRoutes.js";
+import invoiceRoutes from "./routes/invoiceRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import payrollRoutes from "./routes/payrollRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
+import serviceRequestRoutes from "./routes/serviceRequestRoutes.js";
+import settingsRoutes from "./routes/settingsRoutes.js";
+import superAdminDashboardRoutes from "./routes/superAdminDashboardRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
+import teamRoutes from "./routes/teamRoutes.js";
+import AppError from "./utils/AppError.js";
+import errorMiddleware from "./middlewares/errorMiddleware.js";
+import DocumentEmp from "./routes/EmpDocumentRoutes.js";
+import DocumentClient from "./routes/ClientDocumentRoutes.js";
+import testRoutes from "./routes/testRoutes.js";
+import AdminseeDocument from "./routes/AdminSeeDocumentRoutes.js";
+import githubRoutes from "./routes/githubRoutes.js";
+import attendanceRoutes from "./routes/attendanceRoutes.js";
+import referralPartnerRoutes from "./routes/referralPartnerRoutes.js";
+import referralClientRoutes from "./routes/referralClientRoutes.js";
+import commissionRoutes from "./routes/commissionRoutes.js";
+import paymentHistoryRoutes from "./routes/paymentHistoryRoutes.js";
+import idCardRoutes from "./routes/idCardRoutes.js";
+import certificateRoutes from "./routes/certificateRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+import supportRoutes from "./routes/supportRoutes.js";
+import adminPartnerRoutes from "./routes/adminPartnerRoutes.js";
+import taskDocumentRoutes from "./routes/taskDocumentRoutes.js";
+import clientServiceDetailRoutes from "./routes/clientServiceDetailRoutes.js";
+import leaveRoutes from "./routes/leaveRoutes.js";
+import leadRoutes from "./routes/leadRoutes.js";
+import followUpRoutes from "./routes/followUpRoutes.js";
+import quotationRoutes from "./routes/quotationRoutes.js";
+import accountsRoutes from "./routes/accountsRoutes.js";
+import announcementRoutes from "./routes/announcementRoutes.js";
+import meetingRoutes from "./routes/meetingRoutes.js";
+import dailyWorkReportRoutes from "./routes/dailyWorkReportRoutes.js";
+
+
+
+
+
+
+const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const getFrontendBuildPath = () => {
+  const candidates = [
+    path.resolve(process.cwd(), "public"),
+    path.resolve(process.cwd(), "backend/public"),
+    path.resolve(process.cwd(), "../backend/public"),
+    path.resolve(process.cwd(), "public_html"),
+    path.resolve(process.cwd(), "../public_html"),
+    path.resolve(process.cwd(), "../../public_html"),
+    path.resolve(__dirname, "public"),
+    path.resolve(__dirname, "../public"),
+    path.resolve(__dirname, "../../public"),
+    path.resolve(__dirname, "../../../public"),
+    path.resolve(__dirname, "public_html"),
+    path.resolve(__dirname, "../public_html"),
+    path.resolve(__dirname, "../../public_html"),
+    path.resolve(__dirname, "../../../public_html"),
+    "/home/u669181200/domains/user.digitalalife.com/public_html",
+    "/home/u669181200/domains/user.digitalalife.com/public",
+  ];
+  for (const buildPath of candidates) {
+    try {
+      if (fs.existsSync(path.join(buildPath, "index.html"))) {
+        return buildPath;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+  return null;
+};
+
+// const getAllowedOrigins = () => {
+//   const configuredOrigins = [
+//     process.env.FRONTEND_URL,
+//     process.env.PUBLIC_URL,
+//     process.env.APP_URL,
+//     "https://user.digitalalife.com",
+//     ...(process.env.FRONTEND_URLS || "").split(","),
+//   ]
+//     .map((origin) => origin?.trim().replace(/\/+$/, ""))
+//     .filter(Boolean);
+
+//   if (process.env.NODE_ENV === "production") {
+//     return configuredOrigins;
+//   }
+
+//   return [
+//     ...new Set([
+//       ...configuredOrigins,
+//       "http://localhost:5173",
+//       "http://localhost:5174",
+//       "http://127.0.0.1:5173",
+//       "http://127.0.0.1:5174",
+//     ]),
+//   ];
+// };
+const getAllowedOrigins = () => {
+  const selfOrigin = `http://localhost:${process.env.PORT || 5000}`;
+  const selfIpOrigin = `http://127.0.0.1:${process.env.PORT || 5000}`;
+  const configuredOrigins = [
+    process.env.FRONTEND_URL,
+    ...(process.env.FRONTEND_URLS || "").split(","),
+    selfOrigin,
+    selfIpOrigin,
+  ]
+    .map(origin => origin?.trim().replace(/\/+$/, ""))
+    .filter(Boolean);
+
+  if (process.env.NODE_ENV === "production") {  
+    return [...new Set(configuredOrigins)];
+  }
+
+  return [
+    ...new Set([
+      ...configuredOrigins,
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://127.0.0.1:5173",
+      "http://127.0.0.1:5174",
+    ]),
+  ];
+};
+
+app.set("trust proxy", 1);
+app.set("query parser", (queryString) =>
+  mongoSanitize.sanitize(parseQueryString(queryString))
+);
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || getAllowedOrigins().includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new AppError("Request origin is not allowed", 403, "INVALID_REQUEST_ORIGIN"));
+    },
+    credentials: true,
+  })
+);
+
+app.use((req, res, next) => {
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method)) {
+    return next();
+  }
+
+  const allowedOrigins = getAllowedOrigins();
+  const requestOrigin = req.get("origin");
+  const hasAuthCookie = /(?:^|;\s*)(accessToken|refreshToken)=/.test(
+    req.get("cookie") || ""
+  );
+
+  if (requestOrigin && !allowedOrigins.includes(requestOrigin)) {
+    return next(
+      new AppError(
+        "Request origin is not allowed",
+        403,
+        "INVALID_REQUEST_ORIGIN"
+      )
+    );
+  }
+
+  if (process.env.NODE_ENV === "production" && !requestOrigin && hasAuthCookie) {
+    return next(
+      new AppError(
+        "Request origin is required",
+        403,
+        "REQUEST_ORIGIN_REQUIRED"
+      )
+    );
+  }
+
+  return next();
+});
+
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 300,
+    skip: () => process.env.NODE_ENV === "development",
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+      success: false,
+      message: "Too many requests. Please try again later.",
+      data: null,
+      error: {
+        code: "TOO_MANY_REQUESTS",
+      },
+    },
+  })
+);
+
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+
+// Expose uploaded files directory
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use(
+  "/uploads",
+  (req, res, next) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    next();
+  },
+  express.static(uploadsDir)
+);
+
+app.use(cookieParser());
+app.use((req, res, next) => {
+  ["body", "params", "headers"].forEach((key) => {
+    if (req[key]) mongoSanitize.sanitize(req[key]);
+  });
+
+  next();
+});
+
+const getRequiredEnvStatus = () => {
+  const requiredEnv = ["MONGO_URI", "JWT_SECRET"];
+  if (process.env.NODE_ENV === "production") {
+    requiredEnv.push("JWT_REFRESH_SECRET");
+  }
+
+  return requiredEnv.filter((key) => !process.env[key]);
+};
+
+const healthHandler = (req, res) => {
+  const missingEnv = getRequiredEnvStatus();
+
+  res.status(200).json({
+    success: true,
+    status: missingEnv.length ? "degraded" : "ok",
+    data: {
+      database: mongoose.connection.readyState === 1 ? "connected" : "not_connected",
+      missingEnv,
+    },
+    error: null,
+  });
+};
+
+app.get("/health", healthHandler);
+app.get("/api/health", healthHandler);
+
+app.get("/favicon.ico", (req, res) => {
+  const buildPath = getFrontendBuildPath();
+  const faviconPath = buildPath ? path.join(buildPath, "favicon.svg") : null;
+
+  if (faviconPath && fs.existsSync(faviconPath)) {
+    return res.status(200).type("image/svg+xml").sendFile(faviconPath);
+  }
+
+  return res.status(204).end();
+});
+
+app.get("/api/dev/session", (req, res, next) => {
+  if (process.env.NODE_ENV === "development" && process.env.ENABLE_DEV_AUTH_BYPASS === "true") {
+    return res.status(200).json({
+      authenticated: true,
+      user: {
+        _id: "000000000000000000000000",
+        name: "Developer",
+        role: process.env.DEV_LOGIN_ROLE || "super_admin",
+      },
+    });
+  }
+  return next();
+});
+
+app.use("/api/auth", authRoutes);
+app.use("/api/clients", clientRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/employees", employeeRoutes);
+app.use("/api/invoices", invoiceRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/payroll", payrollRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/service-requests", serviceRequestRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/super-admin/dashboard", superAdminDashboardRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/teams", teamRoutes);
+app.use("/api/documentEmp", DocumentEmp);
+app.use("/api/documentClient", DocumentClient);
+app.use("/api/adminDocument", AdminseeDocument);
+app.use("/api/github", githubRoutes);
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/referral-partner", referralPartnerRoutes);
+app.use("/api/referrals", referralClientRoutes);
+app.use("/api/commissions", commissionRoutes);
+app.use("/api/payments", paymentHistoryRoutes);
+app.use("/api/id-cards", idCardRoutes);
+app.use("/api/certificates", certificateRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/partner-profile", profileRoutes);
+app.use("/api/support", supportRoutes);
+app.use("/api/admin/partner-management", adminPartnerRoutes);
+app.use("/api/documents", taskDocumentRoutes);
+app.use("/api/client-service-details", clientServiceDetailRoutes);
+app.use("/api/leaves", leaveRoutes);
+app.use("/api/leads", leadRoutes);
+app.use("/api/follow-ups", followUpRoutes);
+app.use("/api/quotations", quotationRoutes);
+app.use("/api/accounts", accountsRoutes);
+app.use("/api/announcements", announcementRoutes);
+app.use("/api/meetings", meetingRoutes);
+app.use("/api/daily-work-reports", dailyWorkReportRoutes);
+app.use("/api/v1/daily-work-reports", dailyWorkReportRoutes);
+
+
+
+
+
+
+
+
+
+
+
+
+if (process.env.NODE_ENV !== "production") {
+  app.use("/api/test", testRoutes);
+}
+
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) {
+    return next();
+  }
+  const buildPath = getFrontendBuildPath();
+  if (buildPath) {
+    return express.static(buildPath)(req, res, next);
+  }
+  next();
+});
+
+app.get("/{*splat}", (req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) {
+    return next();
+  }
+
+  const buildPath = getFrontendBuildPath();
+  if (buildPath) {
+    const indexPath = path.join(buildPath, "index.html");
+    try {
+      if (fs.existsSync(indexPath)) {
+        const html = fs.readFileSync(indexPath, "utf-8");
+        return res.status(200).type("html").send(html);
+      }
+    } catch (err) {
+      console.error("[Static Server Error] Failed to read index.html:", err);
+    }
+  }
+
+  next();
+});
+
+app.all("/{*splat}", (req, res, next) => {
+  next(
+    new AppError(
+      `Route not found: ${req.originalUrl}`,
+      404,
+      "ROUTE_NOT_FOUND"
+    )
+  );
+});
+
+app.use(errorMiddleware);
+
+export default app;

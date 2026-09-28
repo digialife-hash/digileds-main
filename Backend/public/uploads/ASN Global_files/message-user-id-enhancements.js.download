@@ -1,0 +1,225 @@
+const API_ROOT = '/asnglobal';
+
+const jsonRequest = async (url, options = {}) => {
+  const response = await fetch(`${API_ROOT}${url}`, {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+    ...options,
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || payload.success === false) {
+    throw new Error(payload.message || 'Request failed');
+  }
+  return payload;
+};
+
+const normalize = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+const applicationNumberFromText = (value) => {
+  const match = String(value || '').trim().match(/^ASN[A-Z0-9/ -]+$/i);
+  return match ? match[0].trim() : '';
+};
+
+const findApplication = async (applicationNumber) => {
+  const payload = await jsonRequest(`/applications/get.php?search=${encodeURIComponent(applicationNumber)}&per_page=100`);
+  const applications = payload.data?.applications || [];
+  return applications.find((application) => normalize(application.application_number) === normalize(applicationNumber));
+};
+
+const showNotice = (message, isError = false) => {
+  const notice = document.createElement('div');
+  notice.className = `fixed right-4 top-4 z-[70] rounded-xl px-4 py-3 text-sm font-semibold shadow-xl ${
+    isError ? 'bg-red-600 text-white' : 'bg-emerald-600 text-white'
+  }`;
+  notice.textContent = message;
+  document.body.appendChild(notice);
+  window.setTimeout(() => notice.remove(), 2800);
+};
+
+const createModal = (message, onSubmit) => {
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4';
+  overlay.innerHTML = `
+    <form class="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl">
+      <div class="mb-4 flex items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-secondary-900">Edit Direct Message</h2>
+        <button type="button" data-close class="rounded-lg px-2 py-1 text-xl text-secondary-400 hover:bg-secondary-100">&times;</button>
+      </div>
+      <label class="mb-1 block text-sm font-semibold text-secondary-700">Subject</label>
+      <input name="subject" required maxlength="255" class="mb-4 w-full rounded-xl border-2 border-secondary-200 px-3 py-2.5 text-sm outline-none focus:border-primary-500" />
+      <label class="mb-1 block text-sm font-semibold text-secondary-700">Message</label>
+      <textarea name="message" required rows="6" class="w-full rounded-xl border-2 border-secondary-200 px-3 py-2.5 text-sm outline-none focus:border-primary-500"></textarea>
+      <div class="mt-5 flex justify-end gap-3">
+        <button type="button" data-close class="rounded-xl px-4 py-2 text-sm font-semibold text-secondary-600 hover:bg-secondary-100">Cancel</button>
+        <button type="submit" class="rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700">Update Message</button>
+      </div>
+    </form>`;
+
+  const form = overlay.querySelector('form');
+  form.elements.subject.value = message.subject || '';
+  form.elements.message.value = message.message || '';
+  overlay.querySelectorAll('[data-close]').forEach((button) => {
+    button.addEventListener('click', () => overlay.remove());
+  });
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) overlay.remove();
+  });
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const submit = form.querySelector('[type="submit"]');
+    submit.disabled = true;
+    try {
+      await onSubmit({
+        subject: form.elements.subject.value.trim(),
+        message: form.elements.message.value.trim(),
+      });
+      overlay.remove();
+      showNotice('Direct message updated successfully');
+      window.location.reload();
+    } catch (error) {
+      submit.disabled = false;
+      showNotice(error.message, true);
+    }
+  });
+  document.body.appendChild(overlay);
+};
+
+const findDirectMessage = async (row) => {
+  const payload = await jsonRequest('/messages/get.php?page=1&per_page=100&type=all');
+  const messages = payload.data?.messages || [];
+  const rowText = normalize(row.textContent);
+  return messages.find((candidate) => {
+    const subject = normalize(candidate.subject);
+    const body = normalize(candidate.message).slice(0, 40);
+    return subject && rowText.includes(subject) && (!body || rowText.includes(body));
+  }) || messages.find((candidate) => {
+    return rowText.includes(normalize(candidate.subject));
+  });
+};
+
+const attachDirectMessageActions = () => {
+  if (!/^\/admin\/messages\/?$/.test(window.location.pathname)) return;
+
+  const rows = [...document.querySelectorAll('[class*="cursor-pointer"]')].filter((row) => {
+    return normalize(row.textContent).includes('direct message') && !row.dataset.directActions;
+  });
+  rows.forEach((row) => {
+    row.dataset.directActions = 'true';
+    const actions = document.createElement('div');
+    actions.className = 'ml-auto flex shrink-0 items-center gap-1';
+
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.className = 'rounded-lg px-2 py-1 text-xs font-semibold text-secondary-500 hover:bg-primary-50 hover:text-primary-700';
+    edit.textContent = 'Edit';
+    edit.title = 'Edit direct message';
+    edit.addEventListener('click', async (event) => {
+      event.stopPropagation();
+      edit.disabled = true;
+      try {
+        const message = await findDirectMessage(row);
+        if (!message) throw new Error('Direct message not found');
+        createModal(message, async (values) => {
+          await jsonRequest('/messages/update.php', {
+            method: 'POST',
+            body: JSON.stringify({ message_id: message.id, ...values }),
+          });
+        });
+      } catch (error) {
+        showNotice(error.message, true);
+      } finally {
+        edit.disabled = false;
+      }
+    });
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'rounded-lg px-2 py-1 text-xs font-semibold text-secondary-500 hover:bg-red-50 hover:text-red-700';
+    remove.textContent = 'Delete';
+    remove.title = 'Delete direct message';
+    remove.addEventListener('click', async (event) => {
+      event.stopPropagation();
+      if (!window.confirm('Delete this direct message? This action cannot be undone.')) return;
+      remove.disabled = true;
+      try {
+        const message = await findDirectMessage(row);
+        if (!message) throw new Error('Direct message not found');
+        await jsonRequest('/messages/delete.php', {
+          method: 'POST',
+          body: JSON.stringify({ message_id: message.id }),
+        });
+        showNotice('Direct message deleted successfully');
+        window.location.reload();
+      } catch (error) {
+        showNotice(error.message, true);
+        remove.disabled = false;
+      }
+    });
+
+    actions.append(edit, remove);
+    row.appendChild(actions);
+  });
+};
+
+const attachApplicationDeleteActions = () => {
+  if (!/^\/admin\/applications\/?$/.test(window.location.pathname)) return;
+
+  document.querySelectorAll('table tbody tr').forEach((row) => {
+    if (row.dataset.applicationActions) return;
+    const cells = row.querySelectorAll('td');
+    const actionsCell = cells[cells.length - 1];
+    if (!actionsCell) return;
+
+    row.dataset.applicationActions = 'true';
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'ml-2 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-700';
+    remove.textContent = 'Delete';
+    remove.title = 'Delete application';
+    remove.addEventListener('click', async (event) => {
+      event.stopPropagation();
+      const applicationNumber = applicationNumberFromText(cells[0]?.textContent);
+      if (!applicationNumber || !window.confirm(`Delete application ${applicationNumber}? This action cannot be undone.`)) return;
+
+      remove.disabled = true;
+      try {
+        const application = await findApplication(applicationNumber);
+        if (!application?.id) throw new Error('Application not found');
+        await jsonRequest('/applications/delete.php', {
+          method: 'POST',
+          body: JSON.stringify({ id: application.id }),
+        });
+        row.remove();
+        showNotice('Application deleted successfully');
+      } catch (error) {
+        remove.disabled = false;
+        showNotice(error.message, true);
+      }
+    });
+    actionsCell.appendChild(remove);
+  });
+};
+
+const hideUserProfileIdBadges = () => {
+  if (!/^\/user\/profile\/?$/.test(window.location.pathname)) return;
+
+  document.querySelectorAll('span').forEach((element) => {
+    if (element.dataset.idBadgeHidden) return;
+    if (!applicationNumberFromText(element.textContent)) return;
+    element.dataset.idBadgeHidden = 'true';
+    element.style.display = 'none';
+  });
+};
+
+let scanTimer;
+const scan = () => {
+  window.clearTimeout(scanTimer);
+  scanTimer = window.setTimeout(() => {
+    attachDirectMessageActions();
+    hideUserProfileIdBadges();
+    attachApplicationDeleteActions();
+  }, 150);
+};
+
+new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
+scan();

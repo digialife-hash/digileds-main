@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log*
+coverage/
+.DS_Store
+storage/temp/*
+storage/uploads/*
+storage/videos/*
+storage/projects/*
+logs/*.log
+backups/*

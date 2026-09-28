@@ -1,0 +1,1 @@
+export default function LogoTool() { return <div className="tool-note">Your brand logo will appear here.</div> }
